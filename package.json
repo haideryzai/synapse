@@ -1,0 +1,17 @@
+{
+  "name": "my-analytics",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "description": "Inspired by the connections between neurons that transmit signals in the brain, Synapse acts as the bridge between raw user events and actionable analytics, efficiently relaying and transforming data for rapid querying and visualization.",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "axios": "^1.10.0",
+    "clickhouse": "^2.6.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
