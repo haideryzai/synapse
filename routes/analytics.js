@@ -3,6 +3,7 @@ const router = express.Router();
 const clickhouse = require("../clickhouse/config");
 const { randomUUID } = require("crypto");
 const { URL } = require("url");
+const { calculateBotScore } = require("../utils/calculateBotScore");
 
 // Track event endpoint (moved from index.js)
 router.post("/track", async (req, res) => {
@@ -23,6 +24,8 @@ router.post("/track", async (req, res) => {
     console.error("URL Parsing Error:", err.message);
     return res.status(400).json({ message: "Invalid URL format" });
   }
+
+  const botScore = calculateBotScore(data);
 
   // Prepare data for insertion
   const eventTime = new Date(data.timestamp).toISOString().replace(/\.\d+Z$/, ".000");
@@ -114,10 +117,8 @@ router.post("/track", async (req, res) => {
     connection_downlink: data.connection?.downlink || 0,
     connection_rtt: data.connection?.rtt || 0,
     touch_support: data.touchSupport ? 1 : 0,
-    is_headless: data.isHeadless ? 1 : 0,
-    time_to_first_interaction: data.timeToFirstInteraction || 0,
     mouse_entropy: data.mouseEntropy || 0,
-    canvas_fingerprint: escapeString(data.canvasFingerprint || ""),
+    bot_score: botScore,
     clicks: formatArray(
       (data.clicks || []).map((click) => ({
         x: click.x || 0,
@@ -155,7 +156,7 @@ router.post("/track", async (req, res) => {
       event_type, page_title, screen_width, screen_height, color_depth, device_memory,
       hardware_concurrency, timezone, cookie_enabled, local_storage, session_storage,
       history_length, connection_effective_type, connection_downlink, connection_rtt,
-      touch_support, is_headless, time_to_first_interaction, mouse_entropy, canvas_fingerprint,
+      touch_support, bot_score,
       clicks, mouse_movements, scroll_events, metadata
     )
     VALUES (
@@ -182,10 +183,7 @@ router.post("/track", async (req, res) => {
       ${fields.connection_downlink},
       ${fields.connection_rtt},
       ${fields.touch_support},
-      ${fields.is_headless},
-      ${fields.time_to_first_interaction},
-      ${fields.mouse_entropy},
-      '${fields.canvas_fingerprint}',
+      ${fields.bot_score},
       ${fields.clicks},
       ${fields.mouse_movements},
       ${fields.scroll_events},

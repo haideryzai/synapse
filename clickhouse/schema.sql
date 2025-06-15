@@ -23,10 +23,7 @@ CREATE TABLE IF NOT EXISTS analytics.website_events (
     connection_downlink Float32, -- Network downlink speed
     connection_rtt UInt32, -- Network round-trip time
     touch_support UInt8, -- Boolean as 0/1 for touch support
-    is_headless UInt8, -- Boolean as 0/1 for headless browser
-    time_to_first_interaction Float32, -- Time to first interaction in seconds
-    mouse_entropy Float32, -- Mouse movement entropy
-    canvas_fingerprint String, -- Canvas fingerprint data
+    bot_score UInt8, -- Derived bot detection score
     clicks Array(Tuple(x UInt32, y UInt32, timestamp DateTime64(3), element_tag String, element_class String, element_id String)), -- Click events
     mouse_movements Array(Tuple(x UInt32, y UInt32, timestamp DateTime64(3))), -- Mouse movement events
     scroll_events Array(Tuple(y UInt32, percentage Float32, timestamp DateTime64(3))), -- Scroll events
