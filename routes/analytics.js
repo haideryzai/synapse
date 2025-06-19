@@ -203,12 +203,28 @@ router.post("/track", async (req, res) => {
 });
 
 
-// Example: Query events (GET /api/events)
-router.get("/events", async (req, res) => {
+router.get("/websites", async (req, res) => {
+  try {
+    const query = `
+      SELECT DISTINCT website_id
+      FROM analytics.website_events
+      ORDER BY website_id
+    `;
+    const result = await clickhouse.query(query).toPromise();
+    res.json(result);
+  } catch (err) {
+    console.error("ClickHouse Query Error:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/website/:websiteId/events", async (req, res) => {
+  const websiteId = req.params.websiteId;
   try {
     const query = `
       SELECT *
       FROM analytics.website_events
+      WHERE website_id = '${websiteId}'
       ORDER BY event_time DESC
       LIMIT 100
     `;
@@ -219,5 +235,4 @@ router.get("/events", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 module.exports = router;
